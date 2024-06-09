@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        body {
+            background-color: rgb(37, 37, 37);
+            color: white;
+        }
+        .container {
+            display: flex;
+            padding: 40px;
+            gap: 50px;
+        }
+        .button button {
+            border-radius: 50%;
+            width: 140px;
+            height: 140px;
+        }
+        .winloss {
+            margin-left: 2.5vw;
+        }
+        .winlossreader {
+            display: flex;
+            padding-left: 2.5vw;
+            gap: 30px;
+            font-size: 30px;
+        }
+        .winner {
+            padding-left: 2.5vw;
+            padding-top: 1vh;
+            font-size: 30px;
+        }
+        .scorereader {
+            padding-left: 2.5vw;
+            padding-top: 2vh;
+            font-size: 30px;
+        }
+        .reset button {
+            margin-top: 50px;
+            padding: 10px;
+            font-weight: bold;
+            font-size: large;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="rock button">
+            <button onclick="handleClick('rock')">
+                <img width="120px" src="image/rockRPSGAMES.png" alt="ROCK">
+            </button>
+        </div>
+        <div class="paper button">
+            <button onclick="handleClick('paper')">
+                <img width="120px" src="image/paperRPSGAMES.png" alt="PAPER">
+            </button>
+        </div>
+        <div class="scissor button">
+            <button onclick="handleClick('scissor')">
+                <img width="100px" src="image/scissorRPSGAMES.png" alt="SCISSOR">
+            </button>
+        </div>
+        <div class="reset">
+            <button onclick="resetGame()">Reset</button>
+        </div>
+    </div>
+    <div class="winloss">
+        <div class="winlossreader">
+            <div class="userread"></div>
+            <div class="compread"></div>
+        </div>
+        <div class="winner"></div>
+        <div class="scorereader"></div>
+    </div>
+
+    <script>
+        let comp = '';
+        let user = '';
+        let score = {
+            wins: 0,
+            loss: 0,
+            draw: 0
+        };
+
+        // Initialize score from localStorage or use default
+        if (localStorage.getItem('score')) {
+            score = JSON.parse(localStorage.getItem('score'));
+        } else {
+            localStorage.setItem('score', JSON.stringify(score));
+        }
+
+        document.querySelector('.scorereader').innerText = `Wins = ${score.wins} Loss = ${score.loss} Draw = ${score.draw}`;
+        document.querySelector('.userread').innerText = 'START THE GAME';
+
+        function resetGame() {
+            score = { wins: 0, loss: 0, draw: 0 };
+            localStorage.setItem('score', JSON.stringify(score));
+            document.querySelector('.userread').innerText = 'START THE GAME';
+            document.querySelector('.compread').innerText = '';
+            document.querySelector('.winner').innerText = '';
+            document.querySelector('.scorereader').innerText = `Wins = ${score.wins} Loss = ${score.loss} Draw = ${score.draw}`;
+        }
+
+        function compInp() {
+            const x = Math.random();
+            if (x < 1/3) {
+                comp = 'rock';
+            } else if (x < 2/3) {
+                comp = 'paper';
+            } else {
+                comp = 'scissor';
+            }
+        }
+
+        function check(user) {
+            let flag = -1;
+            if (user === comp) {
+                flag = -1;
+                score.draw++;
+            } else if ((user === 'rock' && comp === 'scissor') || 
+                       (user === 'paper' && comp === 'rock') || 
+                       (user === 'scissor' && comp === 'paper')) {
+                flag = 1;
+                score.wins++;
+            } else {
+                flag = 0;
+                score.loss++;
+            }
+
+            if (flag === 1) {
+                document.querySelector('.winner').innerText = 'USER WON';
+            } else if (flag === 0) {
+                document.querySelector('.winner').innerText = 'COMP WON';
+            } else {
+                document.querySelector('.winner').innerText = 'DRAW';
+            }
+
+            document.querySelector('.scorereader').innerText = `Wins = ${score.wins} Loss = ${score.loss} Draw = ${score.draw}`;
+            localStorage.setItem('score', JSON.stringify(score));
+        }
+
+        function displayUserComp(user, comp) {
+            document.querySelector('.userread').innerText = `user = ${user}`;
+            document.querySelector('.compread').innerText = `comp = ${comp}`;
+        }
+
+        function handleClick(userChoice) {
+            compInp();
+            displayUserComp(userChoice, comp);
+            check(userChoice);
+        }
+    </script>
+</body>
+</html>
